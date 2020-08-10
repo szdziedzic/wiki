@@ -9,6 +9,10 @@ from django.urls import reverse
 class SearchForm(forms.Form):
     q = forms.CharField(label="", widget=forms.TextInput(attrs={'placeholder': 'Search'}))
 
+class AddForm(forms.Form):
+    title = forms.CharField(label="Title: ")
+    text = forms.CharField(label="Text: ", widget=forms.Textarea)
+
 markdowner = Markdown()
 list_of_results = []
 def index(request):
@@ -76,8 +80,39 @@ def search(request):
                         list_of_results.append(entry)
                 
                 return HttpResponseRedirect(reverse("search"))
-                
+
     return render(request, "encyclopedia/search.html", {
         "entries": list_of_results,
         "form": SearchForm()
+    })
+
+def add(request):
+    if request.method == "POST":
+        form = AddForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            text = form.cleaned_data["text"]
+            util.save_entry(title, text)
+            return HttpResponseRedirect(reverse("entry", args=[title]))
+
+    if request.method == "POST":
+        search_form = SearchForm(request.POST)
+        if search_form.is_valid():
+            q = search_form.cleaned_data["q"]
+            if util.get_entry(q):
+                return HttpResponseRedirect(reverse("entry", args=[q]))
+            else:
+                list_of_results.clear()
+                for entry in util.list_entries():
+                    tmp = entry.lower()
+                    q = q.lower()
+                    if q in tmp:
+                        list_of_results.append(entry)
+                
+                return HttpResponseRedirect(reverse("search"))
+
+        
+    return render(request, "encyclopedia/add.html", {
+        "form": SearchForm(),
+        "add_form": AddForm()
     })
