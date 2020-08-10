@@ -3,4 +3,8 @@ Simple version of Wikipedia-like online encyclopedia web-app done while taking C
 
 Full specification of project from CS50 website: https://cs50.harvard.edu/web/2020/projects/1/wiki/#:~:text=Otherwise,%20the%20encyclopedia%20entry%20should%20be%20saved%20to%20disk,%20and%20the%20user%20should%20be%20taken%20to%20the%20new%20entry%E2%80%99s%20page.
 
-You can try this web-app on your computer using git clone command, then (provided that you have Python3 installed) run django server by typing py manage.py runserver in project folder command line. After that server should be hosted on your localhost address (for example http://127.0.0.1:8000/).
+# How to use?
+1. Clone this repo.
+2. Go into repo folder and type "py (or python in other versions) manage.py runserver".
+3. Now app should be working on your localhost (for example: http://localhost:8000/, but might be in other location depends on your OS).
+4. Enjoy
