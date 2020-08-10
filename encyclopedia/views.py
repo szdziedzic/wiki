@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from markdown2 import Markdown
 from . import util
-from django.http import Http404  
+from django.http import Http404   
 from django import forms
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -92,6 +92,9 @@ def add(request):
         if form.is_valid():
             title = form.cleaned_data["title"]
             text = form.cleaned_data["text"]
+            for entry in util.list_entries():
+                if entry.lower() == title.lower():
+                   raise forms.ValidationError("Page already exist.")
             util.save_entry(title, text)
             return HttpResponseRedirect(reverse("entry", args=[title]))
 
