@@ -16,21 +16,9 @@ class AddForm(forms.Form):
 markdowner = Markdown()
 list_of_results = []
 def index(request):
-    if request.method == "POST":
-        form = SearchForm(request.POST)
-        if form.is_valid():
-            q = form.cleaned_data["q"]
-            if util.get_entry(q):
-                return HttpResponseRedirect(reverse("entry", args=[q]))
-            else:
-                list_of_results.clear()
-                for entry in util.list_entries():
-                    tmp = entry.lower()
-                    q = q.lower()
-                    if q in tmp:
-                        list_of_results.append(entry)
-                
-                return HttpResponseRedirect(reverse("search"))
+    search = search_bar(request)
+    if search:
+        return search
 
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries(),
@@ -38,21 +26,9 @@ def index(request):
     })
 
 def entry(request, name):
-    if request.method == "POST":
-        form = SearchForm(request.POST)
-        if form.is_valid():
-            q = form.cleaned_data["q"]
-            if util.get_entry(q):
-                return HttpResponseRedirect(reverse("entry", args=[q]))
-            else:
-                list_of_results.clear()
-                for entry in util.list_entries():
-                    tmp = entry.lower()
-                    q = q.lower()
-                    if q in tmp:
-                        list_of_results.append(entry)
-                
-                return HttpResponseRedirect(reverse("search"))
+    search = search_bar(request)
+    if search:
+        return search
 
     content = util.get_entry(name)
     if not content:
@@ -65,21 +41,9 @@ def entry(request, name):
 
 
 def search(request):
-    if request.method == "POST":
-        form = SearchForm(request.POST)
-        if form.is_valid():
-            q = form.cleaned_data["q"]
-            if util.get_entry(q):
-                return HttpResponseRedirect(reverse("entry", args=[q]))
-            else:
-                list_of_results.clear()
-                for entry in util.list_entries():
-                    tmp = entry.lower()
-                    q = q.lower()
-                    if q in tmp:
-                        list_of_results.append(entry)
-                
-                return HttpResponseRedirect(reverse("search"))
+    search = search_bar(request)
+    if search:
+        return search
 
     return render(request, "encyclopedia/search.html", {
         "entries": list_of_results,
@@ -98,10 +62,22 @@ def add(request):
             util.save_entry(title, text)
             return HttpResponseRedirect(reverse("entry", args=[title]))
 
+    search = search_bar(request)
+    if search:
+        return search
+
+        
+    return render(request, "encyclopedia/add.html", {
+        "form": SearchForm(),
+        "add_form": AddForm()
+    })
+
+
+def search_bar(request):
     if request.method == "POST":
-        search_form = SearchForm(request.POST)
-        if search_form.is_valid():
-            q = search_form.cleaned_data["q"]
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            q = form.cleaned_data["q"]
             if util.get_entry(q):
                 return HttpResponseRedirect(reverse("entry", args=[q]))
             else:
@@ -114,8 +90,4 @@ def add(request):
                 
                 return HttpResponseRedirect(reverse("search"))
 
-        
-    return render(request, "encyclopedia/add.html", {
-        "form": SearchForm(),
-        "add_form": AddForm()
-    })
+    return None
