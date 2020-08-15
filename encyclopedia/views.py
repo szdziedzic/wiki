@@ -13,6 +13,9 @@ class AddForm(forms.Form):
     title = forms.CharField(label="Title: ")
     text = forms.CharField(label="Text: ", widget=forms.Textarea)
 
+class EditForm(forms.Form):
+    text = forms.CharField(label="", widget=forms.Textarea())
+
 markdowner = Markdown()
 list_of_results = []
 def index(request):
@@ -91,3 +94,22 @@ def search_bar(request):
                 return HttpResponseRedirect(reverse("search"))
 
     return None
+
+
+def edit(request, name):
+    if not util.get_entry(name):
+        raise Http404
+
+    if request.method == "POST":
+        edit_form = EditForm(request.POST)
+        if edit_form.is_valid():
+            text = edit_form.cleaned_data["text"]
+            util.save_entry(name, text)
+            return HttpResponseRedirect(reverse("entry", args=[name]))
+    else:
+        edit_form = EditForm(initial={"text": util.get_entry(name)})
+    return render(request, "encyclopedia/edit.html", {
+        "form" : SearchForm(),
+        "edit_form": edit_form,
+        "name": name
+    })
