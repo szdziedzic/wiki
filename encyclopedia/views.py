@@ -7,18 +7,26 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 import random
 
+# class for searching bar form
 class SearchForm(forms.Form):
     q = forms.CharField(label="", widget=forms.TextInput(attrs={'placeholder': 'Search'}))
 
+# class for add page form
 class AddForm(forms.Form):
     title = forms.CharField(label="Title: ")
     text = forms.CharField(label="Text: ", widget=forms.Textarea)
 
+# class for edit page form
 class EditForm(forms.Form):
     text = forms.CharField(label="", widget=forms.Textarea())
 
+# utility to convert markdown to HTML
 markdowner = Markdown()
+
+# list of recent search result
 list_of_results = []
+
+# main page view
 def index(request):
     search = search_bar(request)
     if search:
@@ -29,6 +37,7 @@ def index(request):
         "form": SearchForm()
     })
 
+# entry page view for every single entry
 def entry(request, name):
     search = search_bar(request)
     if search:
@@ -43,7 +52,7 @@ def entry(request, name):
         "form": SearchForm()
     })
 
-
+# search page view
 def search(request):
     search = search_bar(request)
     if search:
@@ -54,6 +63,7 @@ def search(request):
         "form": SearchForm()
     })
 
+# add page view
 def add(request):
     if request.method == "POST":
         form = AddForm(request.POST)
@@ -76,7 +86,7 @@ def add(request):
         "add_form": AddForm()
     })
 
-
+# search bar function
 def search_bar(request):
     if request.method == "POST":
         form = SearchForm(request.POST)
@@ -96,10 +106,14 @@ def search_bar(request):
 
     return None
 
-
+# edit view
 def edit(request, name):
     if not util.get_entry(name):
         raise Http404
+
+    search = search_bar(request)
+    if search:
+        return search
 
     if request.method == "POST":
         edit_form = EditForm(request.POST)
@@ -115,6 +129,7 @@ def edit(request, name):
         "name": name
     })
 
+# random page view
 def random_entry(request):
     entries = util.list_entries()
     max_val = len(entries) - 1
