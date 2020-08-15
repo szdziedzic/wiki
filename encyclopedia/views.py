@@ -5,6 +5,7 @@ from django.http import Http404
 from django import forms
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+import random
 
 class SearchForm(forms.Form):
     q = forms.CharField(label="", widget=forms.TextInput(attrs={'placeholder': 'Search'}))
@@ -113,3 +114,10 @@ def edit(request, name):
         "edit_form": edit_form,
         "name": name
     })
+
+def random_entry(request):
+    entries = util.list_entries()
+    max_val = len(entries) - 1
+    ind = random.randint(0, max_val)
+    entry_name = entries[ind]
+    return HttpResponseRedirect(reverse("entry", args=[entry_name]))
